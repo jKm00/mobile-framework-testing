@@ -1,48 +1,122 @@
-import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { Button, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
-import EStyleSheet from 'react-native-extended-stylesheet';
+import {
+  Button,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import Task from './components/Task';
+import { useEffect, useState } from 'react';
+import AddTaskForm from './components/AddTaskForm';
 
-interface Todo {
-  id: string
-  title: string
-  completed: boolean
+export interface Task {
+  id: number;
+  text: string;
+  completed: boolean;
 }
 
 export default function App() {
+  const [input, setInput] = useState('');
+  const [tasks, setTasks] = useState<Task[]>([]);
 
-  const [input, onChangeText] = useState("");
+  const handleAddTask = () => {
+    Keyboard.dismiss();
+    if (input.length === 0) return;
 
-  const [todos, setTodos] = useState<Todo[]>([]);
+    setTasks([
+      ...tasks,
+      {
+        id: tasks.length === 0 ? 0 : tasks[tasks.length - 1].id + 1,
+        text: input,
+        completed: false,
+      },
+    ]);
+    setInput('');
+  };
 
-  const handlePress = () => console.log('handle press');
+  const toggleCompleted = (id: number) => {
+    const completedTaskIndex = tasks.findIndex((t) => t.id === id);
+    if (completedTaskIndex === undefined) return;
+
+    tasks[completedTaskIndex].completed = !tasks[completedTaskIndex].completed;
+
+    setTasks([...tasks]);
+  };
+
+  const deleteCompleted = () => {
+    setTasks([...tasks.filter((t) => t.completed === false)]);
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.inputSection}>
-        <TextInput style={styles.input} onChangeText={onChangeText} value={input} placeholder={'Enter todo title...'} />
-        <Button title='Add todo' onPress={handlePress} />
+    <SafeAreaView style={styles.main}>
+      {/* Today's tasks */}
+      <View style={styles.section}>
+        <View style={styles.sectionTitleWrapper}>
+          <Text style={styles.sectionTitle}>Today's tasks</Text>
+          <TouchableWithoutFeedback onPress={deleteCompleted}>
+            <Text>Delete completed</Text>
+          </TouchableWithoutFeedback>
+        </View>
+
+        <ScrollView style={styles.itemsWrapper}>
+          {/* Task items */}
+          {tasks.map((task) => {
+            return (
+              <Task
+                key={task.id}
+                id={task.id}
+                text={task.text}
+                completed={task.completed}
+                onComplete={(id) => toggleCompleted(id)}
+              />
+            );
+          })}
+        </ScrollView>
       </View>
+
+      {/* Create task section */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.createTaskSection}
+      >
+        <AddTaskForm />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  main: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 10,
-    paddingVertical: 30,
+    backgroundColor: '#E8EAED',
   },
-  inputSection: {
+  section: {
+    marginTop: 30,
+    paddingHorizontal: 20,
+  },
+  sectionTitleWrapper: {
     flexDirection: 'row',
-    gap: 1,
+    justifyContent: 'space-between',
   },
-  input: {
-    flex: 1,
-    borderColor: '#000',
-    borderStyle: 'solid',
-    borderWidth: 1,
-    padding: 5,
-  }
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  itemsWrapper: {
+    height: '100%',
+  },
+  createTaskSection: {
+    position: 'absolute',
+    bottom: 60,
+    width: '100%',
+    paddingHorizontal: 20,
+  },
 });
