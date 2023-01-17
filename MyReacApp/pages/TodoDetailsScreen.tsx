@@ -12,7 +12,6 @@ export default function TodoDetailsScreen({ route }: TodoDetailsScreenProps) {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Todo details screen</Text>
       <Text>{todo?.title}</Text>
     </View>
   );
