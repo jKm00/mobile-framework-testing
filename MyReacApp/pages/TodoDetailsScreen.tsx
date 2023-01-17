@@ -7,7 +7,9 @@ type TodoDetailsScreenProps = NativeStackScreenProps<
   'TodoDetails'
 >;
 
-export default function TodoDetailsScreen({ todo }: TodoDetailsScreenProps) {
+export default function TodoDetailsScreen({ route }: TodoDetailsScreenProps) {
+  const { todo } = route.params;
+
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>Todo details screen</Text>
