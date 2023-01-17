@@ -7,10 +7,17 @@ import {
   Text,
 } from 'react-native';
 
-export default function AddTaskForm() {
+export interface AddTaskFormProp {
+  onSubmit: (title: string) => void;
+}
+
+export default function AddTaskForm({ onSubmit }: AddTaskFormProp) {
   const [input, setInput] = useState('');
 
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    onSubmit(input);
+    setInput('');
+  };
 
   return (
     <View style={styles.form}>
@@ -21,7 +28,7 @@ export default function AddTaskForm() {
         value={input}
         onSubmitEditing={handleSubmit}
       />
-      <TouchableWithoutFeedback>
+      <TouchableWithoutFeedback onPress={handleSubmit}>
         <View style={[styles.button, styles.shadow]}>
           <Text style={styles.buttonLabel}>+</Text>
         </View>

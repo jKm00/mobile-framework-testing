@@ -7,32 +7,26 @@ import {
   TouchableWithoutFeedback,
   TouchableHighlight,
 } from 'react-native';
+import { Todo } from '../models/Todo';
 
 export interface TaskProps {
-  id: number;
-  text: string;
-  completed: boolean;
-  onComplete: (id: number) => void;
+  todo: Todo;
+  toggleComplete: (id: number) => void;
 }
 
-export default function TaskItem({
-  id,
-  text,
-  completed,
-  onComplete,
-}: TaskProps) {
+export default function TaskItem({ todo, toggleComplete }: TaskProps) {
   return (
-    <TouchableWithoutFeedback onPress={() => onComplete(id)}>
-      <View style={styles.item}>
-        <View style={styles.itemLeft}>
+    <View style={styles.item}>
+      <View style={styles.itemLeft}>
+        <TouchableWithoutFeedback onPress={() => toggleComplete(todo.id)}>
           <View style={styles.square}></View>
-          <Text style={styles.itemText}>{text}</Text>
-        </View>
-        <View
-          style={completed ? styles.circularCompleted : styles.circular}
-        ></View>
+        </TouchableWithoutFeedback>
+        <Text style={styles.itemText}>{todo.title}</Text>
       </View>
-    </TouchableWithoutFeedback>
+      <View
+        style={todo.completed ? styles.circularCompleted : styles.circular}
+      ></View>
+    </View>
   );
 }
 
